@@ -1,11 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Ticker } from '../../types/Ticker';
 import { availableTickers, userTickers }
   from '../../appStore/selectors';
 import { setAvailableTicker } from '../../features/TickersSlice';
 import { setAddTicker } from '../../features/UserTickersSlice';
 import { socket } from '../../socket/socket';
-import classNames from 'classnames';
 import { useAppDispatch, useAppSelector } from '../../appStore/hooks';
 import '../../App.scss';
 import AppleIcon from '../../img/apple.png';
@@ -19,11 +18,9 @@ const TickersPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const { items: tickersList } = useAppSelector(availableTickers);
   const selectedTickers: Ticker[] = useAppSelector(userTickers).items;
-  const tickersListToRender: Ticker[] = tickersList
-    .filter((ticker: Ticker) => selectedTickers
-    .some(tick => tick.ticker === ticker.ticker));
-  
+
   useEffect(() => {
+    socket.connect();
     socket.emit('start');
     socket.on(
       'ticker',
@@ -35,15 +32,10 @@ const TickersPage: React.FC = () => {
     return () => {
       socket.close();
     }
-  }, [dispatch])
-
+  }, [dispatch]);
 
   const addTicker = useCallback((ticker: Ticker) => {
-    if (tickersListToRender.includes(ticker)) {
-      return tickersListToRender;
-    } else {
-      dispatch(setAddTicker(ticker));
-    }
+    dispatch(setAddTicker(ticker));
   }, [dispatch])
 
   const infoForTicker = (tickerName: string) => {
@@ -88,6 +80,7 @@ const TickersPage: React.FC = () => {
 
   return (
     <>
+      <div className='title is-1'>Our Tickers: </div>
       <ul>
       {tickersList.length > 0 ? (
         tickersList.map((ticker) => {

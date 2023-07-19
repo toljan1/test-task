@@ -49,6 +49,11 @@
     ]
   },
   "devDependencies": {
-    "@types/react-router-dom": "^5.3.3"
+    "@babel/preset-env": "^7.22.9",
+    "@babel/preset-react": "^7.22.5",
+    "@types/react-router-dom": "^5.3.3",
+    "babel-jest": "^29.6.1",
+    "jest": "^27.5.1",
+    "react-test-renderer": "^18.2.0"
   }
 }

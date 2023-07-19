@@ -1,14 +1,33 @@
-import { useAppSelector } from "../../appStore/hooks";
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../../appStore/hooks";
 import { availableTickers, userTickers } from "../../appStore/selectors";
 import { Ticker } from "../../types/Ticker";
 import { TickerRow } from "../Ticker/Ticker";
+import { socket } from "../../socket/socket";
+import { setAvailableTicker } from "../../features/TickersSlice";
 
 const UserTickersPage: React.FC = () => {
+  const dispatch = useAppDispatch();
   const { items: tickersList } = useAppSelector(availableTickers);
   const selectedTickers: Ticker[] = useAppSelector(userTickers).items;
   const tickersListToRender: Ticker[] = tickersList
     .filter((ticker: Ticker) => selectedTickers
     .some(tick => tick.ticker === ticker.ticker));
+  
+  useEffect(() => {
+    socket.connect();
+    socket.emit('start');
+    socket.on(
+      'ticker',
+      (response: Ticker[]) => {
+        dispatch(setAvailableTicker(response));
+      }
+    );
+
+    return () => {
+      socket.close();
+    }
+  }, [dispatch])
 
   return (
     <>
@@ -42,7 +61,7 @@ const UserTickersPage: React.FC = () => {
               .map((ticker) => (
               <TickerRow
                 key={ticker.ticker}
-                {...ticker}
+                ticker={ticker}
               />
             ))}
           </tbody>
