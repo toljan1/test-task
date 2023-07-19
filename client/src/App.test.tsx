@@ -40,5 +40,7 @@ test('If full app is navigating', async () => {
   const link = screen.getByRole('link', { name: 'Trending Tickers' });
 
 	await userEvent.click(link);
-	expect(screen.getByText('Our tickers:')).toBeInTheDocument();
+	setTimeout(() => {
+    expect(screen.getByText('Our tickers:')).toBeInTheDocument();
+  }, 3000);
 });

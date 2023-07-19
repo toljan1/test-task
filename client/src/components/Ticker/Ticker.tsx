@@ -1,8 +1,9 @@
-import React, { MutableRefObject, useCallback, useEffect, useRef } from 'react';
+import React, { useCallback } from 'react';
 import { setDeleteTicker } from '../../features/UserTickersSlice';
 import { Ticker } from '../../types/Ticker';
 import classNames from 'classnames';
 import { useAppDispatch } from '../../appStore/hooks';
+import { usePreviousPrice } from '../../features/usePreviousPrice';
 
 type Props = {
   ticker: Ticker,
@@ -24,19 +25,6 @@ export const TickerRow: React.FC<Props> = ({
     dividend,
     last_trade_time
   } = ticker;
-
-  const usePreviousPrice = (value: number): boolean => {
-    const ref: MutableRefObject<number | undefined> = useRef();
-  
-    useEffect(() => {
-      ref.current = value;
-    }, [value]);
-  
-    if (ref.current && ref.current > value) {
-      return false;
-    }
-    return true;
-  };
 
   const prevPrice =  usePreviousPrice(price);
 
